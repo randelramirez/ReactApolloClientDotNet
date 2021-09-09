@@ -38,6 +38,8 @@ function getDay(dayNumber) {
       return "Friday";
     case 6:
       return "Saturday";
+    default:
+      throw new Error();
   }
 }
 
@@ -166,7 +168,7 @@ export function Sessions() {
             </button>
           </div>
           <SessionList day={day} />
-          {day == "All" && <AllSessionList />}
+          {day === "All" && <AllSessionList />}
         </div>
       </section>
     </>
