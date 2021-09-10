@@ -1,11 +1,10 @@
 import * as React from "react";
 import { Switch, Route, Link, useRouteMatch } from "react-router-dom";
 import "./style-sessions.css";
-import { Sessions, AddSession } from "./Sessions";
+import Sessions from "../../components/Sessions/Sessions";
+import AddSession from "../../components/Sessions/AddSession";
 import Speakers from "../../components/Speakers/Speakers";
 import Speaker from "../../components/Speakers/Speaker";
-
-// import { Speakers, Speaker } from "./Speakers"
 
 export function Conference() {
   const { path, url } = useRouteMatch();
