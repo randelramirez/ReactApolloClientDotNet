@@ -13,8 +13,6 @@ const SPEAKER_ATTRIBUTES = gql`
   }
 `;
 
-
-
 // define speaker query
 export const SPEAKERS = gql`
   query speakers {
