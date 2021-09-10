@@ -13,14 +13,7 @@ const SPEAKER_ATTRIBUTES = gql`
   }
 `;
 
-export const FEATURED_SPEAKER = gql`
-  mutation markFeatured($speakerId: ID!, $featured: Boolean!) {
-    markFeatured(speakerId: $speakerId, featured: $featured) {
-      id
-      featured
-    }
-  }
-`;
+
 
 // define speaker query
 export const SPEAKERS = gql`

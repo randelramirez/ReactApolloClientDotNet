@@ -1,6 +1,7 @@
 import React from "react";
 import { useQuery, useMutation } from "@apollo/client";
-import { FEATURED_SPEAKER, SPEAKERS } from "./queries";
+import { SPEAKERS } from "./queries";
+import { FEATURED_SPEAKER } from "./mutations";
 
 export default function SpeakerList() {
   const { loading, error, data } = useQuery(SPEAKERS);
