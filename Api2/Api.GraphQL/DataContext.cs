@@ -16,10 +16,13 @@ namespace Api.GraphQL
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Session>().HasKey(s => s.Id);
-            modelBuilder.Entity<Session>().HasMany(s => s.Speakers);
-            
             modelBuilder.Entity<Speaker>().HasKey(s => s.Id);
-            modelBuilder.Entity<Speaker>().HasMany(s => s.Sessions);
+            
+            modelBuilder
+                .Entity<Session>()
+                .HasMany(se => se.Speakers)
+                .WithMany(sp => sp.Sessions)
+                .UsingEntity(j => j.ToTable("SessionSpeakers"));
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Api.GraphQL.Models
         
         public bool Featured { get; set; }
         
-        public  List<Session> Sessions { get; set; }
+        public  ICollection<Session> Sessions { get; set; }
 
     }
 }

@@ -34,6 +34,6 @@ namespace Api.GraphQL.Models
 
         public bool Favorite { get; set; }
         
-        public List<Speaker> Speakers { get; set; }
+        public ICollection<Speaker> Speakers { get; set; }
     }
 }
