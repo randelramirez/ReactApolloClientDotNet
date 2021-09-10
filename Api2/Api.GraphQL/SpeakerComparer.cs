@@ -19,7 +19,7 @@ namespace Api.GraphQL
         public int GetHashCode(Speaker obj)
         {
             // to do: check if this is correct, otherwise change what needs to be return
-            return (int)obj.GetHashCode();
+            return obj.Id.GetHashCode() ^ obj.Id.GetHashCode();
         }
     }
 }
