@@ -5,8 +5,8 @@ namespace Api.GraphQL
 {
     public class DataContext : DbContext
     {
-        public DbSet<Speaker> Speakers { get; set; }
+        public DbSet<SpeakerDtoForJsonData> Speakers { get; set; }
 
-        public DbSet<Session> Sessions { get; set; }
+        public DbSet<SessionDtoForJsonData> Sessions { get; set; }
     }
 }

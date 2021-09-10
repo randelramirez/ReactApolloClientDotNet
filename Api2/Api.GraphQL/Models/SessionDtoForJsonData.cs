@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Api.GraphQL.Models
 {
-    public class Session
+    public class SessionDtoForJsonData
     {
-        public Session()
+        public SessionDtoForJsonData()
         {
-            this.Speakers = new List<Speaker>();
+            this.Speakers = new List<SpeakerDtoForJsonData>();
         }
-
-        public Guid Id { get; set; }
+        
+        public string Id { get; set; }
 
         public string Name { get; set; }
 
@@ -34,6 +35,6 @@ namespace Api.GraphQL.Models
 
         public bool Favorite { get; set; }
         
-        public List<Speaker> Speakers { get; set; }
+      public List<SpeakerDtoForJsonData>  Speakers { get; set; }
     }
 }

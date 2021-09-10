@@ -3,13 +3,8 @@ using System.Collections.Generic;
 
 namespace Api.GraphQL.Models
 {
-    public class Speaker
+    public class SpeakerDtoForJsonData
     {
-        public Speaker()
-        {
-            this.Sessions = new List<Session>();
-        }
-        
         public Guid Id { get; set; }
         
         public string Bio { get; set; }
@@ -18,7 +13,5 @@ namespace Api.GraphQL.Models
         
         public bool Featured { get; set; }
         
-        public  List<Session> Sessions { get; set; }
-
     }
 }
