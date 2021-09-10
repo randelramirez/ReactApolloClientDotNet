@@ -1,6 +1,5 @@
-# Consuming-GraphQL-Apollo
-Code repo for course Consuming a GraphQL API with Apollo Client and React on Pluralsight - by Adhithi Ravichandran 
+# React + Apollo Client + ASP.NET Core
 
-Course link: https://app.pluralsight.com/library/courses/consuming-graphql-api-with-apollo-client-react/table-of-contents
+forked from: https://github.com/adhithiravi/Consuming-GraphqL-Apollo by Adhithi Ravichandran
 
-
+I refactored the front-end and made the backend from NodeJS to ASP.NET Core
