@@ -25,7 +25,7 @@ function getDay(dayNumber) {
 }
 
 export default function SessionList({ sessionDay }) {
-  const day = sessionDay ?? getDay(new Date().getDay());
+  const day = sessionDay ? sessionDay : getDay(new Date().getDay());
   // execute query and store response json
   const { loading, error, data } = useQuery(SESSIONS, {
     variables: { day },

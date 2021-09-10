@@ -47,7 +47,7 @@ export default function Sessions() {
               Friday
             </button>
           </div>
-          <SessionList day={day} />
+          <SessionList sessionDay={day} />
           {day === "All" && <AllSessionList />}
         </div>
       </section>
