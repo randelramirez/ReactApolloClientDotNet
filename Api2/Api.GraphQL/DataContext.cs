@@ -5,9 +5,9 @@ namespace Api.GraphQL
 {
     public class DataContext : DbContext
     {
-        public DbSet<SpeakerDtoForJsonData> Speakers { get; set; }
+        public DbSet<Speaker> Speakers { get; set; }
 
-        public DbSet<SessionDtoForJsonData> Sessions { get; set; }
+        public DbSet<Session> Sessions { get; set; }
         
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -20,9 +20,9 @@ namespace Api.GraphQL
             
             modelBuilder
                 .Entity<Session>()
-                .HasMany(se => se.Speakers)
-                .WithMany(sp => sp.Sessions)
-                .UsingEntity(j => j.ToTable("SessionSpeakers"));
+                .HasMany(session => session.Speakers)
+                .WithMany(speaker => speaker.Sessions)
+                .UsingEntity(entityTypeBuilder => entityTypeBuilder.ToTable("SessionSpeakers"));
         }
     }
 }

@@ -16,10 +16,11 @@ namespace Api.GraphQL
             return speaker1.Id == speaker2.Id;
         }
 
-        public int GetHashCode(Speaker obj)
+        public int GetHashCode(Speaker speaker)
         {
             // to do: check if this is correct, otherwise change what needs to be return
-            return obj.Id.GetHashCode() ^ obj.Id.GetHashCode();
+            // return obj.Id.GetHashCode() ^ obj.Id.GetHashCode();
+            return speaker.Id.GetHashCode();
         }
     }
 }

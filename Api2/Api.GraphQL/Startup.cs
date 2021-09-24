@@ -26,6 +26,7 @@ namespace Api.GraphQL
                 {
                     options.UseSqlServer(Configuration.GetConnectionString(nameof(DataContext)),
                         b => b.MigrationsAssembly(contextAssembly));
+                    options.EnableSensitiveDataLogging();
                     //options.UseSqlServer(connection, b => b.MigrationsAssembly("Project.Api"))
                 }
             );

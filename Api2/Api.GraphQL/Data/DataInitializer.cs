@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Api.GraphQL.Models;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace Api.GraphQL.Data
@@ -24,66 +25,97 @@ namespace Api.GraphQL.Data
 
             var sessionsJsonFile = Path.Combine(Directory.GetCurrentDirectory(), $"Data", "sessions.json");
             var sessionsJson = System.IO.File.ReadAllLines(sessionsJsonFile);
-
             var sessionsDto = JsonConvert.DeserializeObject<List<SessionDtoForJsonData>>(string.Join("", sessionsJson));
-            // sessions.ForEach(session => session.Speakers.ForEach(speaker => speakers.Find()));
-            // sessions.Select(session => new { id = session.Id, speakers = speakers.ForEach() })
+
             // initialize data using the json file
-            foreach (var session in sessionsDto)
+            foreach (var sessionDto in sessionsDto)
             {
                 var speakersList = new List<SpeakerDtoForJsonData>();
-                session.Speakers.ForEach(s =>
+                sessionDto.Speakers.ForEach(s =>
                 {
                     var existingSpeaker = speakersDto.Find(speaker => speaker.Id == s.Id);
                     speakersList.Add(existingSpeaker);
                 });
-                session.Speakers = speakersList;
+                sessionDto.Speakers = speakersList;
             }
 
-            // sanitize data, session dto has an id that can be guid or long, (currently using string to), convert to GUID(Create new Guid)
-            var sessions = new List<Session>();
-            foreach (var session in sessionsDto)
+            // sanitize data, session dto has an id that can be guid or long,
+            // (currently using string), convert to GUID(Create new Guid)
+            var sessionsSeedData = new List<Session>();
+            foreach (var sessionDto in sessionsDto)
             {
                 var sessionModel = new Session()
                 {
                     Id = Guid.NewGuid(),
-                    Day = session.Day,
-                    Description = session.Description,
-                    Favorite = session.Favorite,
-                    Format = session.Format,
-                    Level = session.Level,
-                    Name = session.Name,
-                    Room = session.Room,
-                    Title = session.Title,
-                    Track = session.Track,
-                    StartsAt = session.StartsAt,
-                    EndsAt = session.EndsAt
+                    Day = sessionDto.Day,
+                    Description = sessionDto.Description,
+                    Favorite = sessionDto.Favorite,
+                    Format = sessionDto.Format,
+                    Level = sessionDto.Level,
+                    Name = sessionDto.Name,
+                    Room = sessionDto.Room,
+                    Title = sessionDto.Title,
+                    Track = sessionDto.Track,
+                    StartsAt = sessionDto.StartsAt,
+                    EndsAt = sessionDto.EndsAt
                 };
-                sessionModel.Speakers = session.Speakers.Select(s => new Speaker()
-                    { Id = s.Id, Bio = s.Bio, Featured = s.Featured, Name = s.Name, }).ToList();
-                sessions.Add(sessionModel);
+
+                sessionsSeedData.Add(sessionModel);
             }
 
-            var speakers = new List<Speaker>();
-            sessions.ForEach(s => speakers.AddRange(s.Speakers));
-
-            var distinctSpeakers = speakers.Distinct(new SpeakerComparer()).ToList();
-
-            // get all speakers and make sure they're unique
-            // var speakersCount = speakers.Distinct(new SpeakerComparer()).Count();
-            foreach (var speaker in distinctSpeakers)
-            {
-                sessions.ForEach(se =>
+            var speakersSeedData = new List<Speaker>();
+            speakersSeedData.AddRange(speakersDto.Select(speaker =>
+                new Speaker()
                 {
-                    if (se.Speakers.Any(sp => sp.Id == speaker.Id))
+                    Id = speaker.Id,
+                    Bio = speaker.Bio,
+                    Featured = speaker.Featured,
+                    Name = speaker.Name
+                }).ToList());
+
+            speakersSeedData.ForEach(speaker => context.Add(speaker));
+            sessionsSeedData.ForEach(session => context.Add(session));
+            context.SaveChanges();
+            
+            speakersSeedData.ForEach(speaker =>
+            {
+                var sessionsGraphFromDto = sessionsDto.Select(sessionDto =>
+                    new
                     {
-                        speaker.Sessions.Add(se);
+                        Id = sessionDto.Id,
+                        Day = sessionDto.Day,
+                        Description = sessionDto.Description,
+                        Favorite = sessionDto.Favorite,
+                        Format = sessionDto.Format,
+                        Level = sessionDto.Level,
+                        Name = sessionDto.Name,
+                        Room = sessionDto.Room,
+                        Title = sessionDto.Title,
+                        Track = sessionDto.Track,
+                        StartsAt = sessionDto.StartsAt,
+                        EndsAt = sessionDto.EndsAt,
+                        Speakers = sessionDto.Speakers.Select(speakerDto =>
+                            new Speaker()
+                            {
+                                Id = speaker.Id,
+                                Bio = speaker.Bio,
+                                Featured = speaker.Featured,
+                                Name = speaker.Name
+                            }).ToList()
+                    });
+
+                sessionsGraphFromDto.ToList().ForEach(sessionGraph =>
+                {
+                    if (sessionGraph.Speakers.Any(sessionGraphSpeaker => sessionGraphSpeaker.Id.Equals(speaker.Id)))
+                    {
+                        var save = sessionsSeedData.Single(
+                            sessionSaved => sessionSaved.Title.Equals(sessionGraph.Title));
+                        context.Entry(save).State = EntityState.Unchanged;
+                        speaker.Sessions.Add(save);
                     }
                 });
-            }
-            
-            sessions.ForEach(se => context.Add(se));
-            distinctSpeakers.ForEach(sp => context.Add(sp));
+            });
+
             context.SaveChanges();
         }
     }
