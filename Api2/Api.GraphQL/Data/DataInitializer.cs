@@ -30,6 +30,21 @@ namespace Api.GraphQL.Data
             // session title and speaker name are unique
             // map the speaker and sessions
             var speakerSessionMapping = new Dictionary<string, string>();
+            sessionsFromJSON.ForEach(session =>
+            {
+               
+                if (session.Speakers.Count > 0)
+                {
+                    var speaker = session.Speakers[0]?.Name;
+                    speakerSessionMapping.Add(session.Title, speaker);
+                }
+                else 
+                {
+                    speakerSessionMapping.Add(session.Title, null);
+                }
+               
+                
+            });
 
             // initialize data using the json file
             // get speakers from the sessions 
@@ -57,7 +72,6 @@ namespace Api.GraphQL.Data
                     Favorite = sessionFromJSON.Favorite,
                     Format = sessionFromJSON.Format,
                     Level = sessionFromJSON.Level,
-                    Name = sessionFromJSON.Name,
                     Room = sessionFromJSON.Room,
                     Title = sessionFromJSON.Title,
                     Track = sessionFromJSON.Track,
@@ -80,47 +94,60 @@ namespace Api.GraphQL.Data
 
             speakersSeedData.ForEach(speaker => context.Add(speaker));
             sessionsSeedData.ForEach(session => context.Add(session));
-            context.SaveChanges();
-            
-            // add sessions to speakers
-            speakersSeedData.ForEach(speaker =>
-            {
-                var sessionsGraphFromDto = sessionsFromJSON.Select(sessionDto =>
-                    new
-                    {
-                        Id = sessionDto.Id,
-                        Day = sessionDto.Day,
-                        Description = sessionDto.Description,
-                        Favorite = sessionDto.Favorite,
-                        Format = sessionDto.Format,
-                        Level = sessionDto.Level,
-                        Name = sessionDto.Name,
-                        Room = sessionDto.Room,
-                        Title = sessionDto.Title,
-                        Track = sessionDto.Track,
-                        StartsAt = sessionDto.StartsAt,
-                        EndsAt = sessionDto.EndsAt,
-                        Speakers = sessionDto.Speakers.Select(speakerDto =>
-                            new Speaker()
-                            {
-                                Id = speaker.Id,
-                                Bio = speaker.Bio,
-                                Featured = speaker.Featured,
-                                Name = speaker.Name
-                            }).ToList()
-                    });
+            //context.SaveChanges();
 
-                sessionsGraphFromDto.ToList().ForEach(sessionGraph =>
+
+            // map session and speakers
+            speakerSessionMapping.ToList().ForEach(mapping =>
+            {
+                var session = sessionsSeedData.First(session => session.Title == mapping.Key);
+                if(mapping.Value != null)
                 {
-                    if (sessionGraph.Speakers.Any(sessionGraphSpeaker => sessionGraphSpeaker.Id.Equals(speaker.Id)))
-                    {
-                        var save = sessionsSeedData.Single(
-                            sessionSaved => sessionSaved.Title.Equals(sessionGraph.Title));
-                        context.Entry(save).State = EntityState.Unchanged;
-                        speaker.Sessions.Add(save);
-                    }
-                });
+                    var speaker = speakersSeedData.First(speaker => speaker.Name == mapping.Value);
+                    session.Speakers.Add(speaker);
+                }
+              
             });
+          
+
+            // add sessions to speakers
+            //speakersSeedData.ForEach(speaker =>
+            //{
+            //    var sessionsWithSpeakers = sessionsFromJSON.Select(session =>
+            //        new
+            //        {
+            //            Id = session.Id,
+            //            Day = session.Day,
+            //            Description = session.Description,
+            //            Favorite = session.Favorite,
+            //            Format = session.Format,
+            //            Level = session.Level,
+            //            Room = session.Room,
+            //            Title = session.Title,
+            //            Track = session.Track,
+            //            StartsAt = session.StartsAt,
+            //            EndsAt = session.EndsAt,
+            //            Speakers = session.Speakers.Select(speakerDto =>
+            //                new Speaker()
+            //                {
+            //                    Id = speaker.Id,
+            //                    Bio = speaker.Bio,
+            //                    Featured = speaker.Featured,
+            //                    Name = speaker.Name
+            //                }).ToList()
+            //        });
+
+            //    sessionsWithSpeakers.ToList().ForEach(sessionGraph =>
+            //    {
+            //        if (sessionGraph.Speakers.Any(sessionGraphSpeaker => sessionGraphSpeaker.Id.Equals(speaker.Id)))
+            //        {
+            //            var save = sessionsSeedData.Single(
+            //                sessionSaved => sessionSaved.Title.Equals(sessionGraph.Title));
+            //            context.Entry(save).State = EntityState.Unchanged;
+            //            speaker.Sessions.Add(save);
+            //        }
+            //    });
+            //});
 
             context.SaveChanges();
         }
