@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Api.GraphQL.Models;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace Api.GraphQL.Data
@@ -94,8 +93,6 @@ namespace Api.GraphQL.Data
 
             speakersSeedData.ForEach(speaker => context.Add(speaker));
             sessionsSeedData.ForEach(session => context.Add(session));
-            //context.SaveChanges();
-
 
             // map session and speakers
             speakerSessionMapping.ToList().ForEach(mapping =>
@@ -108,46 +105,6 @@ namespace Api.GraphQL.Data
                 }
               
             });
-          
-
-            // add sessions to speakers
-            //speakersSeedData.ForEach(speaker =>
-            //{
-            //    var sessionsWithSpeakers = sessionsFromJSON.Select(session =>
-            //        new
-            //        {
-            //            Id = session.Id,
-            //            Day = session.Day,
-            //            Description = session.Description,
-            //            Favorite = session.Favorite,
-            //            Format = session.Format,
-            //            Level = session.Level,
-            //            Room = session.Room,
-            //            Title = session.Title,
-            //            Track = session.Track,
-            //            StartsAt = session.StartsAt,
-            //            EndsAt = session.EndsAt,
-            //            Speakers = session.Speakers.Select(speakerDto =>
-            //                new Speaker()
-            //                {
-            //                    Id = speaker.Id,
-            //                    Bio = speaker.Bio,
-            //                    Featured = speaker.Featured,
-            //                    Name = speaker.Name
-            //                }).ToList()
-            //        });
-
-            //    sessionsWithSpeakers.ToList().ForEach(sessionGraph =>
-            //    {
-            //        if (sessionGraph.Speakers.Any(sessionGraphSpeaker => sessionGraphSpeaker.Id.Equals(speaker.Id)))
-            //        {
-            //            var save = sessionsSeedData.Single(
-            //                sessionSaved => sessionSaved.Title.Equals(sessionGraph.Title));
-            //            context.Entry(save).State = EntityState.Unchanged;
-            //            speaker.Sessions.Add(save);
-            //        }
-            //    });
-            //});
 
             context.SaveChanges();
         }
