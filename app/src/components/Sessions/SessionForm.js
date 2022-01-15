@@ -8,6 +8,7 @@ export default function SessionForm() {
     cache.modify({
       fields: {
         sessions(exisitingSessions = []) {
+          // we can get the newly created session from data.createSession
           const newSession = data.createSession;
           cache.writeQuery({
             query: ALL_SESSIONS,
