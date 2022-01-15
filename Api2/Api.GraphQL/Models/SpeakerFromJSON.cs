@@ -2,7 +2,7 @@
 
 namespace Api.GraphQL.Models
 {
-    public class SpeakerDtoForJsonData
+    public class SpeakerFromJSON
     {
         public Guid Id { get; set; }
         

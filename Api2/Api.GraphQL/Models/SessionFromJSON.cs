@@ -2,11 +2,11 @@
 
 namespace Api.GraphQL.Models
 {
-    public class SessionDtoForJsonData
+    public class SessionFromJSON
     {
-        public SessionDtoForJsonData()
+        public SessionFromJSON()
         {
-            this.Speakers = new List<SpeakerDtoForJsonData>();
+            this.Speakers = new List<SpeakerFromJSON>();
         }
         
         public string Id { get; set; }
@@ -33,6 +33,6 @@ namespace Api.GraphQL.Models
 
         public bool Favorite { get; set; }
         
-      public List<SpeakerDtoForJsonData>  Speakers { get; set; }
+      public List<SpeakerFromJSON>  Speakers { get; set; }
     }
 }

@@ -21,50 +21,55 @@ namespace Api.GraphQL.Data
         {
             var speakersJsonFile = Path.Combine(Directory.GetCurrentDirectory(), $"Data", "speakers.json");
             var speakersJson = System.IO.File.ReadAllLines(speakersJsonFile);
-            var speakersDto = JsonConvert.DeserializeObject<List<SpeakerDtoForJsonData>>(string.Join("", speakersJson));
+            var speakersFromJSON = JsonConvert.DeserializeObject<List<SpeakerFromJSON>>(string.Join("", speakersJson));
 
             var sessionsJsonFile = Path.Combine(Directory.GetCurrentDirectory(), $"Data", "sessions.json");
             var sessionsJson = System.IO.File.ReadAllLines(sessionsJsonFile);
-            var sessionsDto = JsonConvert.DeserializeObject<List<SessionDtoForJsonData>>(string.Join("", sessionsJson));
+            var sessionsFromJSON = JsonConvert.DeserializeObject<List<SessionFromJSON>>(string.Join("", sessionsJson));
+
+            // session title and speaker name are unique
+            // map the speaker and sessions
+            var speakerSessionMapping = new Dictionary<string, string>();
 
             // initialize data using the json file
-            foreach (var sessionDto in sessionsDto)
+            // get speakers from the sessions 
+            foreach (var sessionFromJSON in sessionsFromJSON)
             {
-                var speakersList = new List<SpeakerDtoForJsonData>();
-                sessionDto.Speakers.ForEach(s =>
+                var speakers = new List<SpeakerFromJSON>();
+                sessionFromJSON.Speakers.ForEach(sessionSpeaker =>
                 {
-                    var existingSpeaker = speakersDto.Find(speaker => speaker.Id == s.Id);
-                    speakersList.Add(existingSpeaker);
+                    var existingSpeaker = speakersFromJSON.Find(speaker => speaker.Id == sessionSpeaker.Id);
+                    speakers.Add(existingSpeaker);
                 });
-                sessionDto.Speakers = speakersList;
+                sessionFromJSON.Speakers = speakers;
             }
 
             // sanitize data, session dto has an id that can be guid or long,
             // (currently using string), convert to GUID(Create new Guid)
             var sessionsSeedData = new List<Session>();
-            foreach (var sessionDto in sessionsDto)
+            foreach (var sessionFromJSON in sessionsFromJSON)
             {
                 var sessionModel = new Session()
                 {
                     Id = Guid.NewGuid(),
-                    Day = sessionDto.Day,
-                    Description = sessionDto.Description,
-                    Favorite = sessionDto.Favorite,
-                    Format = sessionDto.Format,
-                    Level = sessionDto.Level,
-                    Name = sessionDto.Name,
-                    Room = sessionDto.Room,
-                    Title = sessionDto.Title,
-                    Track = sessionDto.Track,
-                    StartsAt = sessionDto.StartsAt,
-                    EndsAt = sessionDto.EndsAt
+                    Day = sessionFromJSON.Day,
+                    Description = sessionFromJSON.Description,
+                    Favorite = sessionFromJSON.Favorite,
+                    Format = sessionFromJSON.Format,
+                    Level = sessionFromJSON.Level,
+                    Name = sessionFromJSON.Name,
+                    Room = sessionFromJSON.Room,
+                    Title = sessionFromJSON.Title,
+                    Track = sessionFromJSON.Track,
+                    StartsAt = sessionFromJSON.StartsAt,
+                    EndsAt = sessionFromJSON.EndsAt
                 };
 
                 sessionsSeedData.Add(sessionModel);
             }
 
             var speakersSeedData = new List<Speaker>();
-            speakersSeedData.AddRange(speakersDto.Select(speaker =>
+            speakersSeedData.AddRange(speakersFromJSON.Select(speaker =>
                 new Speaker()
                 {
                     Id = speaker.Id,
@@ -77,9 +82,10 @@ namespace Api.GraphQL.Data
             sessionsSeedData.ForEach(session => context.Add(session));
             context.SaveChanges();
             
+            // add sessions to speakers
             speakersSeedData.ForEach(speaker =>
             {
-                var sessionsGraphFromDto = sessionsDto.Select(sessionDto =>
+                var sessionsGraphFromDto = sessionsFromJSON.Select(sessionDto =>
                     new
                     {
                         Id = sessionDto.Id,
